@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Budget</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="wrap header">
+    <div class="title">
+      <h1>Budget</h1>
+      <div class="sub" id="subLine"></div>
+    </div>
+
+    <div class="controls">
+      <label class="small">
+        Entry date
+        <input id="entryDate" type="date" />
+      </label>
+
+      <div class="pending">
+        <span class="muted">Pending</span>
+        <span id="pendingCount" class="pill">0</span>
+      </div>
+
+      <button id="clearBtn" class="secondary">Clear</button>
+      <button id="commitBtn">Commit</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>Budget remaining</h2>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th class="num">Remaining (Month)</th>
+              <th class="num">Remaining (Quarter)</th>
+              <th class="num">Remaining (Year)</th>
+              <th class="num">Add spend</th>
+            </tr>
+          </thead>
+          <tbody id="budgetBody"></tbody>
+          <tfoot id="budgetFoot"></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Wedding</h2>
+
+      <div class="grid2">
+        <div>
+          <div class="row">
+            <label class="grow">
+              Real bank balance
+              <input id="bankBalanceInput" type="number" step="0.01" inputmode="decimal" placeholder="0.00" />
+            </label>
+            <button id="bankBalanceBtn" class="secondary">Save</button>
+          </div>
+
+          <div class="row">
+            <label class="grow">
+              Wedding expense
+              <input id="weddingExpenseInput" type="number" step="0.01" inputmode="decimal" placeholder="0.00" />
+            </label>
+            <button id="weddingExpenseBtn" class="secondary">Add</button>
+          </div>
+        </div>
+
+        <div>
+          <div id="weddingBox" class="kpi">
+            <div class="kpiTitle" id="weddingTitle">Projected</div>
+            <div class="kpiBig" id="weddingBig">$0.00</div>
+            <div class="kpiLines mono muted" id="weddingDetails"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

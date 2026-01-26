@@ -1,0 +1,19 @@
+{
+  "categories": [
+    { "key": "rent", "name": "Rent", "monthly": 2000, "showInUI": false },
+
+    { "key": "groceries", "name": "Groceries", "monthly": 480, "showInUI": true },
+    { "key": "lunch_delivery", "name": "Lunch + Delivery", "monthly": 150, "showInUI": true },
+    { "key": "dinner", "name": "Dinner", "monthly": 100, "showInUI": true },
+    { "key": "liquor", "name": "Liquor", "monthly": 250, "showInUI": true },
+
+    { "key": "subscriptions", "name": "Subscriptions & software", "monthly": 75, "showInUI": true },
+    { "key": "fees_finance", "name": "Fees & finance", "monthly": 125, "showInUI": true },
+    { "key": "retail", "name": "Retail", "monthly": 250, "showInUI": true },
+    { "key": "extra_misc", "name": "Extra/Misc", "monthly": 150, "showInUI": true },
+
+    { "key": "travel", "name": "Travel", "monthly": 0, "yearlyOverride": 1500, "showInUI": true },
+    { "key": "gift", "name": "Gift", "monthly": 0, "yearlyOverride": 1440, "showInUI": true },
+    { "key": "emergency", "name": "Emergency", "monthly": 0, "yearlyOverride": 500, "showInUI": true }
+  ]
+}
