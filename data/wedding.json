@@ -1,4 +1,10 @@
 {
-  "bankBalanceUpdates": [],
+  "bankBalanceUpdates": [
+    {
+      "id": "1769471641270-0e6bb4a173973",
+      "date": "2026-01-26",
+      "balance": 100
+    }
+  ],
   "weddingExpenses": []
 }
