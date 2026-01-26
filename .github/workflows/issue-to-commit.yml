@@ -1,4 +1,4 @@
-name: Issue -> Commit budget data
+name: Issue -> Commit + Deploy
 
 on:
   issues:
@@ -7,10 +7,20 @@ on:
 permissions:
   contents: write
   issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  apply:
+  apply_commit_deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,6 +30,24 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           python .github/scripts/apply_budget_issue.py
+
+      - name: Write deploy marker (nonce)
+        run: |
+          python - <<'PY'
+          import json, os, datetime, secrets
+          from pathlib import Path
+          p = Path("data/deploy_meta.json")
+          p.parent.mkdir(parents=True, exist_ok=True)
+          obj = {
+            "nonce": secrets.token_hex(8),
+            "updatedAt": datetime.datetime.utcnow().isoformat(timespec="milliseconds") + "Z",
+            "issue": int(os.environ.get("ISSUE_NUMBER","0") or 0),
+            "runId": os.environ.get("GITHUB_RUN_ID","")
+          }
+          p.write_text(json.dumps(obj, indent=2) + "\n", encoding="utf-8")
+          PY
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
 
       - name: Commit & push (if changes)
         id: commit
@@ -32,12 +60,27 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add data/transactions.json data/wedding.json
+          git add data/transactions.json data/wedding.json data/deploy_meta.json
           git commit -m "Update budget data (issue #${{ github.event.issue.number }})"
           git push
 
           echo "changed=true" >> $GITHUB_OUTPUT
           echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Configure Pages
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        if: steps.commit.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        if: steps.commit.outputs.changed == 'true'
+        id: deploy
+        uses: actions/deploy-pages@v4
 
       - name: Comment + close issue
         uses: actions/github-script@v7
@@ -51,12 +94,7 @@ jobs:
               await github.rest.issues.createComment({
                 ...context.repo,
                 issue_number,
-                body: `✅ Applied payload and committed: ${sha}`
-              });
-              await github.rest.issues.update({
-                ...context.repo,
-                issue_number,
-                state: "closed"
+                body: `✅ Applied payload, committed ${sha}, and deployed Pages.`
               });
             } else {
               await github.rest.issues.createComment({
@@ -64,9 +102,10 @@ jobs:
                 issue_number,
                 body: `ℹ️ No changes to commit.`
               });
-              await github.rest.issues.update({
-                ...context.repo,
-                issue_number,
-                state: "closed"
-              });
             }
+
+            await github.rest.issues.update({
+              ...context.repo,
+              issue_number,
+              state: "closed"
+            });

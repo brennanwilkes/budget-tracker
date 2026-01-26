@@ -2,6 +2,7 @@ const LS = {
   entryDate: "budget.ui.entryDate.v1",
   pendingTx: "budget.pending.transactions.v1",
   pendingWedding: "budget.pending.wedding.v1",
+  deployNonce: "budget.deploy.nonce.v1",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -226,11 +227,22 @@ function categoryMonthlyBudget(cat, yearOnlySet) {
 }
 
 async function main() {
+  const meta = await fetch(`./data/deploy_meta.json?v=${Date.now()}`).then(r => r.json());
+  const lastNonce = localStorage.getItem(LS.deployNonce);
+
+  if (meta?.nonce && meta.nonce !== lastNonce) {
+    localStorage.setItem(LS.deployNonce, meta.nonce);
+    localStorage.removeItem(LS.pendingTx);
+    localStorage.removeItem(LS.pendingWedding);
+  }
+
+  const cache = `?v=${encodeURIComponent(meta.nonce || Date.now())}`;
+
   const [config, budget, txCommitted, weddingCommitted] = await Promise.all([
-    fetch("./data/config.json").then(r => r.json()),
-    fetch("./data/budget.json").then(r => r.json()),
-    fetch("./data/transactions.json").then(r => r.json()),
-    fetch("./data/wedding.json").then(r => r.json()),
+    fetch(`./data/config.json${cache}`).then(r => r.json()),
+    fetch(`./data/budget.json${cache}`).then(r => r.json()),
+    fetch(`./data/transactions.json${cache}`).then(r => r.json()),
+    fetch(`./data/wedding.json${cache}`).then(r => r.json()),
   ]);
 
   const realTodayIso = todayIsoLocal();
