@@ -248,7 +248,9 @@ async function main() {
   const realTodayIso = todayIsoLocal();
   const globalStartUTC = dateFromIso(config.startDate);
   const targetYears = safeNum(config.targetYears || 2);
-  const targetEndUTC = addYearsUTC(globalStartUTC, targetYears);
+  const targetEndUTC = config.endDate
+    ? dateFromIso(config.endDate)
+    : addYearsUTC(globalStartUTC, targetYears);
   const targetEndIso = isoFromDateUTC(targetEndUTC);
 
   // Entry date = UI as-of date
@@ -352,7 +354,8 @@ async function main() {
   // Target computed from pay schedule + planned spending
   const targetPay = sumPayBetween(globalStartUTC, targetEndUTC);
   const targetPlannedSpend = plannedSpendingBetweenUTC(monthlyTotalSpendPlan, globalStartUTC, targetEndUTC);
-  const weddingTarget = targetPay - targetPlannedSpend;
+  const preSavings = safeNum(config.preSavings || 0);
+  const weddingTarget = targetPay - targetPlannedSpend + preSavings;
 
   $("subLine").textContent = `Target ${targetEndIso} • ${fmt.format(weddingTarget)}`;
 

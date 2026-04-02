@@ -1,11 +1,13 @@
 {
-  "startDate": "2026-03-01",
+  "startDate": "2026-04-01",
   "targetYears": 2,
+  "endDate": "2028-08-31",
+  "preSavings": 4500,
   "github": {
     "repo": "brennanwilkes/budget-tracker"
   },
   "paycheque": {
-    "defaultAmount": 2856,
+    "defaultAmount": 1500,
     "anchorDates": ["2026-01-09", "2026-01-23"],
     "bonus": {
       "amount": 10000,
